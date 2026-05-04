@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../store/auth';
 import api from '../api/client';
 import { toast } from '../utils';
@@ -69,16 +69,6 @@ export function LoginPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    setLoading(true);
-    try {
-      await oauthLogin('google', credentialResponse.credential);
-    } catch (e: any) {
-      setError(e.response?.data?.detail || 'Google login failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFacebookSuccess = async (response: any) => {
     if (response.accessToken) {
