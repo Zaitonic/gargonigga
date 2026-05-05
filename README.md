@@ -21,7 +21,7 @@ AcadSync serves as a centralized hub where users can access different features b
 ### Backend
 - **Python (FastAPI)** - A high-performance web framework for building the RESTful API.
 - **SQLAlchemy** - ORM for robust database management.
-- **SQLite** - Lightweight, file-based database for easy local setup and development.
+- **MySQL** - Robust relational database replacing SQLite for scalable data storage.
 
 ## How to Run Locally
 
@@ -31,6 +31,16 @@ Running the project on any PC is extremely simple thanks to the included startup
 Make sure you have the following installed on your PC:
 - [Node.js](https://nodejs.org/) (for the frontend)
 - [Python 3.10+](https://www.python.org/) (for the backend)
+- **MySQL Server** (e.g. via XAMPP). Must be running on `127.0.0.1:3306` with user `root` and no password.
+
+### Data Migration (First Time Only)
+If you are running the project for the first time after upgrading to MySQL, run the migration script to transfer all existing accounts and data from the old SQLite database:
+1. Start your MySQL server (e.g. from XAMPP Control Panel).
+2. Open a terminal in the root project folder and run:
+   ```bash
+   python migrate_to_mysql.py
+   ```
+   *This script will automatically create the `acadsync` database and copy all your data over safely.*
 
 ### Steps to Run
 1. **Clone the repository** to your local machine.

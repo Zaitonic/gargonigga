@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = "sqlite:///./acadsync.db"
+    DATABASE_URL: str = "mysql+pymysql://root:@127.0.0.1:3306/acadsync"
 
     # JWT
     JWT_SECRET: str = "acadsync-super-secret-key-change-in-production"
