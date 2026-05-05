@@ -6,7 +6,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 export function LoginPage() {
   const { login, register, oauthLogin } = useAuth();
-  const [step, setStep] = useState<'login' | 'forgot1' | 'forgot2' | 'forgot3' | 'register'>('login');
+  const [step, setStep] = useState<'login' | 'forgot1' | 'forgot2' | 'forgot3'>('login');
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
@@ -19,13 +19,6 @@ export function LoginPage() {
   const [resetToken, setResetToken] = useState('');
   const [newPw1, setNewPw1] = useState('');
   const [newPw2, setNewPw2] = useState('');
-  
-  const [regFirst, setRegFirst] = useState('');
-  const [regLast, setRegLast] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPw, setRegPw] = useState('');
-  const [regRole, setRegRole] = useState('student');
-  const [regDept, setRegDept] = useState('');
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -51,39 +44,7 @@ export function LoginPage() {
     }
   };
 
-  const handleRegister = async () => {
-    setError('');
-    if (!regFirst || !regLast || !regEmail || !regPw || !regDept) {
-      setError('Please fill in all fields.'); return;
-    }
-    setLoading(true);
-    try {
-      await register({
-        first_name: regFirst, last_name: regLast, email: regEmail,
-        password: regPw, role: regRole, department_section: regDept
-      });
-    } catch (e: any) {
-      setError(e.response?.data?.detail || 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-
-  const handleFacebookSuccess = async (response: any) => {
-    if (response.accessToken) {
-      setLoading(true);
-      try {
-        await oauthLogin('facebook', response.accessToken);
-      } catch (e: any) {
-        setError(e.response?.data?.detail || 'Facebook login failed.');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setError('Facebook login failed.');
-    }
-  };
 
   const handleSendOtp = async () => {
     setError('');
@@ -197,99 +158,11 @@ export function LoginPage() {
                 <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Google
               </button>
-              <button
-                onClick={() => {
-                  const appId = import.meta.env.VITE_FACEBOOK_APP_ID;
-                  if (!appId) {
-                    setError('Facebook App ID not configured.');
-                    return;
-                  }
-                  // Load Facebook SDK and login
-                  const w = window as any;
-                  if (!w.FB) {
-                    const script = document.createElement('script');
-                    script.src = 'https://connect.facebook.net/en_US/sdk.js';
-                    script.onload = () => {
-                      w.FB.init({ appId, cookie: true, xfbml: false, version: 'v18.0' });
-                      w.FB.login((res: any) => {
-                        if (res.authResponse) handleFacebookSuccess({ accessToken: res.authResponse.accessToken });
-                      }, { scope: 'email,public_profile' });
-                    };
-                    document.body.appendChild(script);
-                  } else {
-                    w.FB.login((res: any) => {
-                      if (res.authResponse) handleFacebookSuccess({ accessToken: res.authResponse.accessToken });
-                    }, { scope: 'email,public_profile' });
-                  }
-                }}
-                style={{ flex: 1, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#1877F2,#1565D8)', border: 'none', color: 'white', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.25s', fontSize: '12px', boxShadow: '0 2px 12px rgba(24,119,242,.25)' }}
-              >
-                <i className="fab fa-facebook-f"></i> Facebook
-              </button>
-            </div>
-
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--login-sub)' }}>
-              Don't have an account?{' '}
-              <button onClick={() => { setStep('register'); setError(''); }} style={{ background: 'none', border: 'none', color: '#818cf8', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Register</button>
             </div>
           </div>
         )}
 
-        {/* ───── REGISTER STEP ───── */}
-        {step === 'register' && (
-          <div className="fade-in">
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--login-text)' }}>Create an Account</div>
-              <div style={{ fontSize: 12, color: 'var(--login-sub)', marginTop: 4 }}>Join AcadSync to stay connected</div>
-            </div>
-            {error && <div className="error-msg"><i className="fas fa-exclamation-circle" style={{ marginRight: 6 }}></i>{error}</div>}
-            
-            <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-              <div style={{ flex: 1 }}>
-                <label className="label login-label">First Name</label>
-                <input className="input login-input" placeholder="John" value={regFirst} onChange={e => setRegFirst(e.target.value)} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="label login-label">Last Name</label>
-                <input className="input login-input" placeholder="Doe" value={regLast} onChange={e => setRegLast(e.target.value)} />
-              </div>
-            </div>
-            
-            <div style={{ marginBottom: 12 }}>
-              <label className="label login-label">Email</label>
-              <input type="email" className="input login-input" placeholder="john.doe@example.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} />
-            </div>
 
-            <div style={{ marginBottom: 12 }}>
-              <label className="label login-label">Password</label>
-              <input type="password" className="input login-input" placeholder="Create a password" value={regPw} onChange={e => setRegPw(e.target.value)} />
-            </div>
-
-            <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
-              <div style={{ flex: 1 }}>
-                <label className="label login-label">Role</label>
-                <select className="input login-input" value={regRole} onChange={e => setRegRole(e.target.value)}>
-                  <option value="student">Student</option>
-                  <option value="instructor">Instructor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div style={{ flex: 2 }}>
-                <label className="label login-label">Department / Section</label>
-                <input className="input login-input" placeholder="e.g. BSIT 4A" value={regDept} onChange={e => setRegDept(e.target.value)} />
-              </div>
-            </div>
-
-            <button className="btn-primary" style={{ width: '100%', padding: 14, fontSize: 13, letterSpacing: '0.1em' }} onClick={handleRegister} disabled={loading}>
-              {loading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-user-plus" style={{ marginRight: 8 }}></i>CREATE ACCOUNT</>}
-            </button>
-
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--login-sub)', marginTop: 20 }}>
-              Already have an account?{' '}
-              <button onClick={() => { setStep('login'); setError(''); }} style={{ background: 'none', border: 'none', color: '#818cf8', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Sign in</button>
-            </div>
-          </div>
-        )}
 
         {/* ───── FORGOT STEP 1 ───── */}
         {step === 'forgot1' && (
